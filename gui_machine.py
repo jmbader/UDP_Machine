@@ -1,4 +1,4 @@
-from tkinter import Tk, Label, Button, LEFT, Entry, TOP, BOTTOM, X
+from tkinter import *
 import socket
 from random import randint
 from struct import pack
@@ -25,35 +25,35 @@ class MyFirstGUI:
     def __init__(self, master):
         self.master = master
         master.title("GUI for sending UDP packets")
-
-        self.label = Label(master, text="Lets send some UDP Packets")
-        self.label.pack()
+        master.geometry('610x300')
 
         self.syn_button = Button(master, text="SYN", command=self.syn)
-        self.syn_button.pack(side=LEFT)
+        self.syn_button.grid(row=1, column=1, padx=5, pady=5, sticky=W)
 
         self.create_lcd_button = Button(master, text="Create a lcd at address 1 in package 1", command=self.create_lcd)
-        self.create_lcd_button.pack(side=LEFT)
+        self.create_lcd_button.grid(row=2, column=1, columnspan=2, padx=5, pady=5, sticky=W)
 
         self.fin_button = Button(master, text="FIN", command=self.fin)
-        self.fin_button.pack(side=LEFT)
+        self.fin_button.grid(row=3, column=1, padx=5, pady=5, sticky=W)
 
         self.set_eye_pos1_button = Button(master, text="Set eye at position 1", command=self.set_eye_pos_1)
-        self.set_eye_pos1_button.pack(side=LEFT)
+        self.set_eye_pos1_button.grid(row=4, column=1, padx=5, pady=5, sticky=W)
 
         self.set_eye_pos2_button = Button(master, text="Set eye at position 2", command=self.set_eye_pos_2)
-        self.set_eye_pos2_button.pack(side=LEFT)
+        self.set_eye_pos2_button.grid(row=4, column=2, padx=5, pady=5, sticky=W)
 
         self.set_eye_pos_button = Button(master, text="Set eye at random position", command=self.set_eye_pos)
-        self.set_eye_pos_button.pack(side=LEFT)
+        self.set_eye_pos_button.grid(row=4, column=3, padx=5, pady=5, sticky=W)
 
         self.packet_input_text_box = Entry(master, width=100)
-        #self.packet_input_text_box.grid(row=1, column=1)
+        self.packet_input_text_box.grid(row=5, column=1, columnspan=4, padx=5, pady=5, sticky=W)
         self.packet_input_text_box.bind('<Return>', func=self.packet_input_text)
-        self.packet_input_text_box.pack(padx=5, pady=5)
+
+        self.text_output = Text(master, width=75)
+        self.text_output.grid(row=6, column=1, columnspan=4, padx=5, pady=5, sticky=W)
 
         self.close_button = Button(master, text="Close", command=master.quit)
-        self.close_button.pack(side=BOTTOM)
+        self.close_button.grid(row=0, column=1, padx=5, pady=5, sticky=W)
 
     def syn(self):
         print("SYN Packet")
@@ -107,8 +107,10 @@ class MyFirstGUI:
             data, addr = self.sock.recvfrom(1024)  # buffer size is 1024 bytes
             milliseconds = int(round(time.time() * 1000))
             print("{0} ms Response:{1}".format(milliseconds, data))
+            self.text_output.insert('1.0', str(data) + '\n')
         except Exception:
             print("Packet request sent but timed out after 5 seconds")
+            self.text_output.insert('1.0', "Packet request sent but timed out after 5 seconds\n")
 
     def packet_input_text(self, input_info):
         # print(input_string)
