@@ -11,10 +11,10 @@ UDP_PORT = 5050  # 5005
 MESSAGE_SYN = b'\x01\xFF\x01'
 MESSAGE_UART_SERVO = b'\x07\x0D\x00\x01\x01\x00'
 MESSAGE_FIN = b'\x04\x00\x01'
-MESSAGE_LCD_POS = b'\x08\x00\x01\x01\x02\x00\x02'
+MESSAGE_LCD_POS = b'\x08\x00\x01\x01\x02\x00\x04'
 
-MESSAGE_LCD_POS_1 = b'\x08\x00\x01\x01\x02\x00\x02\x00\x00'
-MESSAGE_LCD_POS_2 = b'\x08\x00\x01\x01\x02\x00\x02\x9f\x9f'
+MESSAGE_LCD_POS_1 = b'\x08\x00\x01\x01\x02\x00\x04\x00\x00\x00\x00'
+MESSAGE_LCD_POS_2 = b'\x08\x00\x01\x01\x02\x00\x04\x9f\x9f\x9f\x9f'
 
 
 class MyFirstGUI:
@@ -67,6 +67,26 @@ class MyFirstGUI:
         self.close_button = Button(master, text="Close", command=master.quit, height=button_height, width=button_width)
         self.close_button.grid(row=1, column=3, padx=5, pady=5)
 
+        self.spam_button = Button(master, text="Spam that shit", command=self.spam, height=button_height, width=button_width)
+        self.spam_button.grid(row=7, column=1, columnspan=4, pady=20)
+
+    def spam(self):
+        while True:
+            x1 = pack("B", randint(0, 159))
+            y1 = pack("B", randint(0, 159))
+            x2 = pack("B", randint(0, 159))
+            y2 = pack("B", randint(0, 159))
+
+            print("Set eye position at {0},{1}".format(x1, y1))
+            packet = MESSAGE_LCD_POS + x1 + y1 + x2 + y2
+            print(packet)
+            milliseconds = int(round(time.time() * 1000))
+            print("{0} ms".format(milliseconds))
+            self.sock.sendto(packet, (UDP_IP, UDP_PORT))
+            self.print_response()
+
+            time.sleep(0.01)
+
     def syn(self):
         print("SYN Packet")
         milliseconds = int(round(time.time() * 1000))
@@ -103,11 +123,13 @@ class MyFirstGUI:
         self.print_response()
 
     def set_eye_pos(self):
-        x = pack("B", randint(0, 159))
-        y = pack("B", randint(0, 159))
+        x1 = pack("B", randint(0, 159))
+        y1 = pack("B", randint(0, 159))
+        x2 = pack("B", randint(0, 159))
+        y2 = pack("B", randint(0, 159))
 
-        print("Set eye position at {0},{1}".format(x, y))
-        packet = MESSAGE_LCD_POS + x + y
+        print("Set eye position at {0},{1}".format(x1, y1))
+        packet = MESSAGE_LCD_POS + x1 + y1 + x2 + y2
         print(packet)
         milliseconds = int(round(time.time() * 1000))
         print("{0} ms".format(milliseconds))
@@ -141,7 +163,7 @@ class MyFirstGUI:
             self.sock.settimeout(0.1)
             data, addr = self.sock.recvfrom(1024)  # buffer size is 1024 bytes
         except Exception:
-            self.packet_input_text_box.insert('1.0', "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+            self.text_output.insert('1.0', "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
             self.sock.settimeout(5)
 
 
